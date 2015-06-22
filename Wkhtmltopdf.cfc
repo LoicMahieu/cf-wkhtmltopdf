@@ -18,44 +18,64 @@ component {
     string charset = 'UTF-8'
   ) {
     var tmpFile = _tmpFile();
-    var args = ['--quiet'];
-    args.addAll(_optionsToArray(options));
-    args.addAll([
-      '-',
-      tmpFile
-    ]);
-    var p = _exec(this.commandPath, args);
+    var fileContent = '';
 
-    var output = p.getOutputStream();
-    output.write(str.getBytes(charset));
-    output.close();
+    try {
 
-    p.waitFor();
+      var args = ['--quiet'];
+      args.addAll(_optionsToArray(options));
+      args.addAll([
+        '-',
+        tmpFile
+      ]);
+      var p = _exec(this.commandPath, args);
 
-    if (p.exitValue() == 0) {
-      return FileReadBinary(tmpFile);
-    } else {
-      return _handleProcessError(p, this.commandPath, args);
+      var output = p.getOutputStream();
+      output.write(str.getBytes(charset));
+      output.close();
+
+      p.waitFor();
+
+      if (p.exitValue() != 0) {
+        return _handleProcessError(p, this.commandPath, args);
+      } else {
+        fileContent = fileReadBinary(tmpFile);
+      }
+
+    } finally {
+      fileDelete(tmpFile);
     }
+
+    return fileContent;
   }
 
   public function fromURL(required string urlStr, struct options = {}) {
     var tmpFile = _tmpFile();
-    var args = ['--quiet'];
-    args.addAll(_optionsToArray(options));
-    args.addAll([
-      urlStr,
-      tmpFile
-    ]);
-    var p = _exec(this.commandPath, args);
+    var fileContent = '';
 
-    p.waitFor();
+    try {
 
-    if (p.exitValue() == 0) {
-      return FileReadBinary(tmpFile);
-    } else {
-      return _handleProcessError(p, this.commandPath, args);
+      var args = ['--quiet'];
+      args.addAll(_optionsToArray(options));
+      args.addAll([
+        urlStr,
+        tmpFile
+      ]);
+      var p = _exec(this.commandPath, args);
+
+      p.waitFor();
+
+      if (p.exitValue() != 0) {
+        return _handleProcessError(p, this.commandPath, args);
+      } else {
+        fileContent = fileReadBinary(tmpFile);
+      }
+
+    } finally {
+      fileDelete(tmpFile);
     }
+
+    return fileContent;
   }
 
   // --- privates
