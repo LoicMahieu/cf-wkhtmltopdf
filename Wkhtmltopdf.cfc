@@ -148,15 +148,15 @@ component {
     var error = process.getErrorStream();
     var fullCommand = _fullCommand(command, args);
 
+    var detail = IOUtils.toString(error);
     var message = [
       'wkhtmltopdf has fail.',
       'Command: `#fullCommand#`',
       'Exit code: `#process.exitValue()#`',
-      'Message: `#IOUtils.toString(error)#`'
+      'Message: `#detail#`'
     ];
 
-
-    throw(arrayToList(message, ' - '));
+    throw(message = arrayToList(message, ' - '), detail = detail);
   }
 
   private function _exec(required string name, required array args) {
