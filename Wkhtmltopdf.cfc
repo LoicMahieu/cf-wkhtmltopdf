@@ -123,6 +123,7 @@ component {
   private function _quote(required string val) {
     // escape and quote the value if it is a string and this isn't windows
     if (server.os.name != 'UNIX') {
+      val = replace(val, '"', '\"', 'all');
       if(val CONTAINS " "){
         return '"#val#"';
       }
