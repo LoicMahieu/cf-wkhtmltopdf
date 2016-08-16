@@ -110,7 +110,7 @@ component {
         key = '--' & _dasherize(key);
       }
 
-      if (isBoolean(val) && val != false) {
+      if (!isNumeric(val) && isBoolean(val) && val != false) {
         res.add(key);
       } else {
         res.add(key & ' ' & _quote(val));
@@ -123,7 +123,10 @@ component {
   private function _quote(required string val) {
     // escape and quote the value if it is a string and this isn't windows
     if (server.os.name != 'UNIX') {
-      val = reReplace(val, '(["\\$`])', '\\\1', 'all');
+      val = replace(val, '"', '\"', 'all');
+      if(val CONTAINS " "){
+        return '"#val#"';
+      }
     }
     return val;
   }
